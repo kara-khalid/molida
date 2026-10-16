@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستەمی حساباتی مۆلیدە</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Vazirmatn', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen p-3 sm:p-6">
+
+    <div class="max-w-md sm:max-w-3xl mx-auto space-y-4">
+        
+        <!-- ================= ۱. مینیوی سەرەکی (Dashboard) ================= -->
+        <div id="mainDashboard" class="space-y-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 text-center">
+                <h1 class="text-xl font-bold text-blue-600 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> سیستەمی حساباتی مۆلیدە
+                </h1>
+                <p class="text-slate-500 text-xs mt-1">تکایە بەشێک هەڵبژێرە بۆ بەڕێوەبردن</p>
+            </div>
+
+            <!-- ٤ بەشە سەربەخۆکە -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- بەشی ١: پارەدانی مانگانە -->
+                <div onclick="navigateTo('monthList')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 hover:border-blue-500 transition cursor-pointer flex items-center gap-4">
+                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 text-xl flex-shrink-0">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm">١. پارەدانی مانگانە</h2>
+                        <p class="text-slate-500 text-xs mt-0.5">بەڕێوەبردنی مانگەکان، ئەمپێر و سندوق</p>
+                    </div>
+                </div>
+
+                <!-- بەشی ٢: هاتوو -->
+                <div onclick="navigateTo('income')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 hover:border-emerald-500 transition cursor-pointer flex items-center gap-4">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 text-xl flex-shrink-0">
+                        <i class="fa-solid fa-house-chimney-user"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm">٢. بەشی هاتوو (ماڵە هاتووەکان)</h2>
+                        <p class="text-slate-500 text-xs mt-0.5">تۆمارکردنی زانیاری ماڵەکان</p>
+                    </div>
+                </div>
+
+                <!-- بەشی ٣: ڕۆشتوو (مانگانە) -->
+                <div onclick="navigateTo('expMonthList')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 hover:border-red-500 transition cursor-pointer flex items-center gap-4">
+                    <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600 text-xl flex-shrink-0">
+                        <i class="fa-solid fa-money-bill-transfer"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm">٣. بەشی ڕۆشتوو (خەرجی)</h2>
+                        <p class="text-slate-500 text-xs mt-0.5">بەڕێوەبردنی خەرجی مانگانە</p>
+                    </div>
+                </div>
+
+                <!-- بەشی ٤: تێبینییەکان -->
+                <div onclick="navigateTo('notes')" class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 hover:border-amber-500 transition cursor-pointer flex items-center gap-4">
+                    <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 text-xl flex-shrink-0">
+                        <i class="fa-solid fa-note-sticky"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-slate-800 text-sm">٤. بەشی تێبینییەکان</h2>
+                        <p class="text-slate-500 text-xs mt-0.5">تۆمارکردنی ئاگاداری و قەرزەکان</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= بەشی ۱: لیستی مانگەکانی پارەدان ================= -->
+        <div id="sectionMonthList" class="hidden space-y-4">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="navigateTo('dashboard')" class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-right"></i> سەرەکی
+                </button>
+                <h1 class="text-sm font-bold text-blue-600">پارەدانی مانگانە (هەڵبژاردنی مانگ)</h1>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-semibold text-slate-700 border-b pb-2">زیادکردنی مانگی نوێ</h2>
+                <form id="monthForm" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">مانگ (١-١٢)</label>
+                            <input type="number" id="monthNum" min="1" max="12" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">ساڵ</label>
+                            <input type="number" id="yearNum" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-500 mb-1">نرخی ١ ئەمپێر (دینار)</label>
+                        <input type="number" id="monthPrice" required placeholder="7000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-xl text-xs transition">
+                        زیادکردنی مانگ
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xs font-semibold text-slate-700 mb-3 border-b pb-2">مانگە تۆمارکراوەکان</h2>
+                <div id="monthsGrid" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- ================= ناوەوەی بەشی ۱ (ژمێریاری مانگ و سندوق) ================= -->
+        <div id="sectionPayments" class="hidden space-y-4">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="navigateTo('monthList')" class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-right"></i> مانگەکان
+                </button>
+                <h1 id="activeMonthTitle" class="text-xs font-bold text-blue-600"></h1>
+                <span id="activeMonthPrice" class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg"></span>
+            </div>
+
+            <!-- بەشی کاتیی سندوق و تەسلیمکردن -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h2 class="text-xs font-semibold text-slate-700">دۆخی سندوق و ڕادەستکردن</h2>
+                    <button onclick="withdrawCash()" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-xl text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                        <i class="fa-solid fa-hand-holding-hand"></i> تەسلیمکردنی سندوق (براو)
+                    </button>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="bg-slate-50 p-2 rounded-xl border border-slate-200">
+                        <span class="block text-[10px] text-slate-500">کۆی گشتی کۆکراوە</span>
+                        <span id="boxGrandTotal" class="font-bold text-blue-600">٠ دینار</span>
+                    </div>
+                    <div class="bg-emerald-50 p-2 rounded-xl border border-emerald-100">
+                        <span class="block text-[10px] text-emerald-600">تەسلیمکراو (براوە)</span>
+                        <span id="boxWithdrawnTotal" class="font-bold text-emerald-700">٠ دینار</span>
+                    </div>
+                    <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
+                        <span class="block text-[10px] text-blue-600">ماوە لە سندوقدا</span>
+                        <span id="boxCurrentBalance" class="font-bold text-blue-800">٠ دینار</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- فۆرمی زیادکردنی بەشداربوو -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-semibold text-blue-700 border-b pb-2">تۆمارکردنی بەشداربووی مانگ</h2>
+                <form id="paymentForm" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] text-slate-500 mb-1">ناوی سیانی</label>
+                        <input type="text" id="fullName" required placeholder="ئارام عومەر ئەحمەد" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">ژمارەی مۆبایل</label>
+                            <input type="tel" id="phoneNumber" placeholder="0750XXXXXXX" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">بڕی ئەمپێر</label>
+                            <input type="number" id="ampereCount" required min="1" placeholder="٥" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">بڕی پارە (خۆکار)</label>
+                            <input type="text" id="totalAmount" readonly class="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-xs font-bold text-blue-600">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">بەروار</label>
+                            <input type="date" id="paymentDate" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2 rounded-xl text-xs transition">
+                        تۆمارکردن
+                    </button>
+                </form>
+            </div>
+
+            <!-- لیستی بەشداربووان و ڕەنگەکان -->
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h2 class="text-xs font-semibold text-blue-700">لیستی بەشداربووان</h2>
+                    <input type="text" id="searchInput" placeholder="گەڕان..." class="bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1 text-xs w-32">
+                </div>
+
+                <!-- ڕێنمایی ڕەنگەکان -->
+                <div class="flex items-center gap-3 text-[10px] text-slate-500 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block"></span> شین = لە سندوقدا ماوە</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> سەوز = تەسلیمکراوە (براوە)</span>
+                </div>
+
+                <div id="paymentsListContainer" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- ================= بەشی ۲: بەشی هاتوو (زانیاری ماڵە هاتووەکان) ================= -->
+        <div id="sectionIncome" class="hidden space-y-4">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="navigateTo('dashboard')" class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-right"></i> سەرەکی
+                </button>
+                <h1 class="text-sm font-bold text-emerald-600">بەشی هاتوو (زانیاری ماڵەکان)</h1>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-semibold text-emerald-700 border-b pb-2">تۆمارکردنی زانیاری ماڵی هاتوو</h2>
+                <form id="incomeForm" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] text-slate-500 mb-1">ناوی سیانی</label>
+                        <input type="text" id="incFullName" required placeholder="ناوی کەسەکە" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">ژمارەی مۆبایل</label>
+                            <input type="tel" id="incPhone" placeholder="0750XXXXXXX" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">زانیاری خانوو</label>
+                            <input type="text" id="incHouse" required placeholder="ژمارەی خانوو/شوقە" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">بڕی ئەمپێر</label>
+                            <input type="number" id="incAmpere" required min="1" placeholder="٥" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">بەروار</label>
+                            <input type="date" id="incDate" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 rounded-xl text-xs transition">
+                        تۆمارکردن
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <h2 class="text-xs font-semibold text-emerald-700">لیستی ماڵە هاتووەکان</h2>
+                    <input type="text" id="incSearchInput" placeholder="گەڕان..." class="bg-slate-50 border border-slate-300 rounded-xl px-2.5 py-1 text-xs w-32">
+                </div>
+                <div id="incomeListContainer" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- ================= بەشی ۳: لیستی مانگەکانی ڕۆشتوو (خەرجی) ================= -->
+        <div id="sectionExpMonthList" class="hidden space-y-4">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="navigateTo('dashboard')" class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-right"></i> سەرەکی
+                </button>
+                <h1 class="text-sm font-bold text-red-600">بەشی ڕۆشتوو (هەڵبژاردنی مانگی خەرجی)</h1>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-semibold text-slate-700 border-b pb-2">زیادکردنی مانگی خەرجی نوێ</h2>
+                <form id="expMonthForm" class="space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">مانگ (١-١٢)</label>
+                            <input type="number" id="expMonthNum" min="1" max="12" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-slate-500 mb-1">ساڵ</label>
+                            <input type="number" id="expYearNum" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-medium py-2 rounded-xl text-xs transition">
+                        زیادکردنی مانگی خەرجی
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <h2 class="text-xs font-semibold text-slate-700 mb-3 border-b pb-2">مانگەکانی خەرجی تۆمارکراو</h2>
+                <div id="expMonthsGrid" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+            </div>
+        </div>
+
+        <!-- ================= ناوەوەی بەشی ۳ (تۆمارکردنی خەرجی مانگ) ================= -->
+        <div id="sectionExpenses" class="hidden space-y-4">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="navigateTo('expMonthList')" class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-right"></i> مانگەکانی خەرجی
+                </button>
+                <h1 id="activeExpMonthTitle" class="text-xs font-bold text-red-600"></h1>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-semibold text-red-700 border-b pb-2">تۆمارکردنی خەرجی نوێ</h2>
+                <form id="expenseForm" class="space-y-3">
+                    <div>
+                        <label class="block text-[11px] text-slate-500 mb-1">بابەتی خەرجی (بەنزین، ڕۆن...)</label>
+                        <input type="text" id="expenseTitle" required placeholder="بۆ نموونە: کڕینی گاز" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-500 mb-1">بڕی پارە (دینار)</label>
+                        <input type="number" id="expenseAmount" required placeholder="50000" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] text-slate-500 mb-1">بەروار</label>
+                        <input type="date" id="expenseDate" required class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-500 text-white font-medium py-2 rounded-xl text-xs transition">
+                        تۆمارکردنی خەرجی
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-semibold text-red-700 border-b pb-2">لیستی خەرجییەکانی ئەم مانگە</h2>
+                <div id="expensesListContainer" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+                <div class="pt-2 border-t flex justify-between items-center text-xs font-bold">
+                    <span class="text-slate-600">کۆی خەرجی ئەم مانگە:</span>
+                    <span id="expensesTotal" class="text-red-600">٠ دینار</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= بەشی ٤: تێبینییەکان ================= -->
+        <div id="sectionNotes" class="hidden space-y-4">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <button onclick="navigateTo('dashboard')" class="bg-slate-100 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-arrow-right"></i> سەرەکی
+                </button>
+                <h1 class="text-sm font-bold text-amber-600">بەشی تێبینییەکان</h1>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                <h2 class="text-xs font-semibold text-amber-700 border-b pb-2">تێبینی نوێ</h2>
+                <form id="noteForm" class="space-y-3">
+                    <div>
+                        <input type="text" id="noteTitle" required placeholder="ناونیشانی تێبینی" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs">
+                    </div>
+                    <div>
+                        <textarea id="noteContent" rows="3" required placeholder="دەقی تێبینیەکە..." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs resize-none"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-2 rounded-xl text-xs transition">
+                        پاشەکەوتکردن
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+                <div id="notesContainer" class="space-y-2 max-h-[300px] overflow-y-auto"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let months = JSON.parse(localStorage.getItem('gen_months_db')) || [];
+        let expMonths = JSON.parse(localStorage.getItem('gen_exp_months_db')) || [];
+        let payments = JSON.parse(localStorage.getItem('gen_payments_db')) || [];
+        let incomes = JSON.parse(localStorage.getItem('gen_incomes_db')) || [];
+        let expenses = JSON.parse(localStorage.getItem('gen_expenses_db')) || [];
+        let notes = JSON.parse(localStorage.getItem('gen_notes_db')) || [];
+
+        let currentMonthId = null;
+        let currentExpMonthId = null;
+
+        const today = new Date();
+        document.getElementById('monthNum').value = today.getMonth() + 1;
+        document.getElementById('yearNum').value = today.getFullYear();
+        document.getElementById('expMonthNum').value = today.getMonth() + 1;
+        document.getElementById('expYearNum').value = today.getFullYear();
+        
+        document.getElementById('paymentDate').valueAsDate = today;
+        document.getElementById('incDate').valueAsDate = today;
+        document.getElementById('expenseDate').valueAsDate = today;
+
+        function navigateTo(target) {
+            document.getElementById('mainDashboard').classList.add('hidden');
+            document.getElementById('sectionMonthList').classList.add('hidden');
+            document.getElementById('sectionPayments').classList.add('hidden');
+            document.getElementById('sectionIncome').classList.add('hidden');
+            document.getElementById('sectionExpMonthList').classList.add('hidden');
+            document.getElementById('sectionExpenses').classList.add('hidden');
+            document.getElementById('sectionNotes').classList.add('hidden');
+
+            if (target === 'dashboard') document.getElementById('mainDashboard').classList.remove('hidden');
+            else if (target === 'monthList') { document.getElementById('sectionMonthList').classList.remove('hidden'); renderMonths(); }
+            else if (target === 'payments') document.getElementById('sectionPayments').classList.remove('hidden');
+            else if (target === 'income') { document.getElementById('sectionIncome').classList.remove('hidden'); renderIncomes(); }
+            else if (target === 'expMonthList') { document.getElementById('sectionExpMonthList').classList.remove('hidden'); renderExpMonths(); }
+            else if (target === 'expenses') document.getElementById('sectionExpenses').classList.remove('hidden');
+            else if (target === 'notes') { document.getElementById('sectionNotes').classList.remove('hidden'); renderNotes(); }
+        }
+
+        // --- بەشی ۱: مانگەکانی پارەدان ---
+        document.getElementById('monthForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const month = parseInt(document.getElementById('monthNum').value);
+            const year = parseInt(document.getElementById('yearNum').value);
+            const price = parseFloat(document.getElementById('monthPrice').value);
+            const id = `m_${month}_${year}`;
+
+            if (months.some(m => m.id === id)) { alert('ئەم مانگە پێشتر هەیە!'); return; }
+            months.push({ id, month, year, price, currentBatch: 1 });
+            localStorage.setItem('gen_months_db', JSON.stringify(months));
+            renderMonths();
+            this.reset();
+        });
+
+        function renderMonths() {
+            const grid = document.getElementById('monthsGrid');
+            grid.innerHTML = months.length === 0 ? '<p class="text-slate-400 text-xs text-center p-3">هیچ مانگێک نییە</p>' : '';
+            months.forEach(m => {
+                grid.innerHTML += `
+                    <div onclick="openMonth('${m.id}')" class="bg-slate-50 border border-slate-200 p-3 rounded-xl flex justify-between items-center cursor-pointer hover:border-blue-500">
+                        <div>
+                            <h3 class="font-bold text-blue-700 text-xs">مانگی ${m.month} / ${m.year}</h3>
+                            <p class="text-[10px] text-slate-500 mt-0.5">نرخ: ${m.price.toLocaleString()} دینار</p>
+                        </div>
+                        <button onclick="deleteMonth('${m.id}', event)" class="text-red-500 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>`;
+            });
+        }
+
+        function deleteMonth(id, e) {
+            e.stopPropagation();
+            if (confirm('سڕینەوەی ئەم مانگە؟')) {
+                months = months.filter(m => m.id !== id);
+                payments = payments.filter(p => p.monthId !== id);
+                localStorage.setItem('gen_months_db', JSON.stringify(months));
+                localStorage.setItem('gen_payments_db', JSON.stringify(payments));
+                renderMonths();
+            }
+        }
+
+        function openMonth(id) {
+            currentMonthId = id;
+            const m = months.find(item => item.id === id);
+            if (!m.currentBatch) m.currentBatch = 1;
+            document.getElementById('activeMonthTitle').textContent = `مانگی (${m.month} / ${m.year})`;
+            document.getElementById('activeMonthPrice').textContent = m.price.toLocaleString() + ' د';
+            navigateTo('payments');
+            saveAndRenderPayments();
+        }
+
+        // پارەدانی مانگ
+        const ampereCountInput = document.getElementById('ampereCount');
+        ampereCountInput.addEventListener('input', () => {
+            const m = months.find(item => item.id === currentMonthId);
+            document.getElementById('totalAmount').value = ((parseFloat(ampereCountInput.value) || 0) * (m ? m.price : 0)).toLocaleString();
+        });
+
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const m = months.find(item => item.id === currentMonthId);
+            payments.push({
+                id: Date.now(),
+                monthId: currentMonthId,
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phoneNumber').value || '-',
+                amperes: parseFloat(ampereCountInput.value),
+                total: parseFloat(ampereCountInput.value) * m.price,
+                date: document.getElementById('paymentDate').value,
+                isWithdrawn: false,
+                batchNo: null
+            });
+            saveAndRenderPayments();
+            this.reset();
+            document.getElementById('paymentDate').valueAsDate = new Date();
+        });
+
+        function deletePayment(id) {
+            payments = payments.filter(p => p.id !== id);
+            saveAndRenderPayments();
+        }
+
+        // تەسلیمکردنی سندوق بۆ خاوەن کار
+        function withdrawCash() {
+            let activePayments = payments.filter(p => p.monthId === currentMonthId && !p.isWithdrawn);
+            if (activePayments.length === 0) {
+                alert('هیچ پارەیەکی نوێ لە سندوقدا نییە بۆ تەسلیمکردن!');
+                return;
+            }
+
+            let sum = activePayments.reduce((acc, curr) => acc + curr.total, 0);
+            const m = months.find(item => item.id === currentMonthId);
+
+            if (confirm(`ئایا دڵنیایت لە ڕادەستکردنی بڕی (${sum.toLocaleString()} دینار) بۆ خاوەن کار لە وەک جەبەی #${m.currentBatch}؟`)) {
+                activePayments.forEach(p => {
+                    p.isWithdrawn = true;
+                    p.batchNo = m.currentBatch;
+                });
+                m.currentBatch += 1;
+                localStorage.setItem('gen_months_db', JSON.stringify(months));
+                saveAndRenderPayments();
+            }
+        }
+
+        function saveAndRenderPayments(filter = '') {
+            localStorage.setItem('gen_payments_db', JSON.stringify(payments));
+            const container = document.getElementById('paymentsListContainer');
+            container.innerHTML = '';
+            
+            let monthPayments = payments.filter(p => p.monthId === currentMonthId);
+            let filtered = monthPayments.filter(p => p.fullName.includes(filter));
+
+            // ژمێرکاری سندوق
+            let grandTotal = monthPayments.reduce((a, b) => a + b.total, 0);
+            let withdrawnTotal = monthPayments.filter(p => p.isWithdrawn).reduce((a, b) => a + b.total, 0);
+            let currentBalance = grandTotal - withdrawnTotal;
+
+            document.getElementById('boxGrandTotal').textContent = grandTotal.toLocaleString() + ' د';
+            document.getElementById('boxWithdrawnTotal').textContent = withdrawnTotal.toLocaleString() + ' د';
+            document.getElementById('boxCurrentBalance').textContent = currentBalance.toLocaleString() + ' د';
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-xs text-center p-3">هیچ تۆمارێک نییە</p>';
+                return;
+            }
+
+            filtered.forEach(p => {
+                // ڕەنگکردن: ئەگەر برا بێت سەوز، ئەگەر لە سندوق مابێت شین
+                const cardStyle = p.isWithdrawn 
+                    ? 'bg-emerald-50 border-emerald-200' 
+                    : 'bg-blue-50 border-blue-200';
+                
+                const badgeStyle = p.isWithdrawn 
+                    ? '<span class="text-[9px] bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded">تەسلیمکراو (وەجبەی #' + p.batchNo + ')</span>' 
+                    : '<span class="text-[9px] bg-blue-200 text-blue-800 px-1.5 py-0.5 rounded">لە سندوقدا ماوە</span>';
+
+                container.innerHTML += `
+                    <div class="${cardStyle} border p-2.5 rounded-xl space-y-1 text-xs transition">
+                        <div class="flex justify-between font-bold text-slate-800">
+                            <span class="flex items-center gap-1.5">${p.fullName} ${badgeStyle}</span>
+                            <span class="${p.isWithdrawn ? 'text-emerald-700' : 'text-blue-700'}">${p.total.toLocaleString()} د</span>
+                        </div>
+                        <div class="flex justify-between text-slate-500 text-[10px]">
+                            <span>مۆبایل: ${p.phone} | ئەمپێر: ${p.amperes}</span>
+                            <span>${p.date}</span>
+                            <button onclick="deletePayment(${p.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => saveAndRenderPayments(e.target.value));
+
+        // --- بەشی ۲: بەشی هاتوو ---
+        document.getElementById('incomeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            incomes.push({
+                id: Date.now(),
+                fullName: document.getElementById('incFullName').value,
+                phone: document.getElementById('incPhone').value || '-',
+                house: document.getElementById('incHouse').value,
+                ampere: document.getElementById('incAmpere').value,
+                date: document.getElementById('incDate').value
+            });
+            renderIncomes();
+            this.reset();
+            document.getElementById('incDate').valueAsDate = new Date();
+        });
+
+        function deleteIncome(id) {
+            incomes = incomes.filter(i => i.id !== id);
+            renderIncomes();
+        }
+
+        function renderIncomes(filter = '') {
+            localStorage.setItem('gen_incomes_db', JSON.stringify(incomes));
+            const container = document.getElementById('incomeListContainer');
+            container.innerHTML = '';
+            let filtered = incomes.filter(i => i.fullName.includes(filter) || i.house.includes(filter));
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-xs text-center p-3">هیچ زانیارییەک نییە</p>';
+                return;
+            }
+            filtered.forEach(i => {
+                container.innerHTML += `
+                    <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl space-y-1 text-xs">
+                        <div class="flex justify-between font-bold text-slate-800">
+                            <span>${i.fullName} (${i.house})</span>
+                            <button onclick="deleteIncome(${i.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="flex justify-between text-slate-500 text-[10px]">
+                            <span>مۆبایل: ${i.phone} | ئەمپێر: ${i.ampere}</span>
+                            <span>بەروار: ${i.date}</span>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        document.getElementById('incSearchInput').addEventListener('input', (e) => renderIncomes(e.target.value));
+
+        // --- بەشی ۳: مانگەکانی بەشی ڕۆشتوو (خەرجی) ---
+        document.getElementById('expMonthForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const month = parseInt(document.getElementById('expMonthNum').value);
+            const year = parseInt(document.getElementById('expYearNum').value);
+            const id = `exp_m_${month}_${year}`;
+
+            if (expMonths.some(m => m.id === id)) { alert('ئەم مانگی خەرجییە پێشتر هەیە!'); return; }
+            expMonths.push({ id, month, year });
+            localStorage.setItem('gen_exp_months_db', JSON.stringify(expMonths));
+            renderExpMonths();
+            this.reset();
+        });
+
+        function renderExpMonths() {
+            const grid = document.getElementById('expMonthsGrid');
+            grid.innerHTML = expMonths.length === 0 ? '<p class="text-slate-400 text-xs text-center p-3">هیچ مانگێکی خەرجی نییە</p>' : '';
+            expMonths.forEach(m => {
+                grid.innerHTML += `
+                    <div onclick="openExpMonth('${m.id}')" class="bg-slate-50 border border-slate-200 p-3 rounded-xl flex justify-between items-center cursor-pointer hover:border-red-500">
+                        <div>
+                            <h3 class="font-bold text-red-700 text-xs">خەرجی مانگی ${m.month} / ${m.year}</h3>
+                        </div>
+                        <button onclick="deleteExpMonth('${m.id}', event)" class="text-red-500 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>`;
+            });
+        }
+
+        function deleteExpMonth(id, e) {
+            e.stopPropagation();
+            if (confirm('سڕینەوەی ئەم مانگی خەرجییە؟')) {
+                expMonths = expMonths.filter(m => m.id !== id);
+                expenses = expenses.filter(ex => ex.expMonthId !== id);
+                localStorage.setItem('gen_exp_months_db', JSON.stringify(expMonths));
+                localStorage.setItem('gen_expenses_db', JSON.stringify(expenses));
+                renderExpMonths();
+            }
+        }
+
+        function openExpMonth(id) {
+            currentExpMonthId = id;
+            const m = expMonths.find(item => item.id === id);
+            document.getElementById('activeExpMonthTitle').textContent = `خەرجییەکانی مانگی (${m.month} / ${m.year})`;
+            navigateTo('expenses');
+            renderExpenses();
+        }
+
+        // ناوەوەی خەرجی مانگ
+        document.getElementById('expenseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            expenses.push({
+                id: Date.now(),
+                expMonthId: currentExpMonthId,
+                title: document.getElementById('expenseTitle').value,
+                amount: parseFloat(document.getElementById('expenseAmount').value),
+                date: document.getElementById('expenseDate').value
+            });
+            renderExpenses();
+            this.reset();
+            document.getElementById('expenseDate').valueAsDate = new Date();
+        });
+
+        function deleteExpense(id) {
+            expenses = expenses.filter(ex => ex.id !== id);
+            renderExpenses();
+        }
+
+        function renderExpenses() {
+            localStorage.setItem('gen_expenses_db', JSON.stringify(expenses));
+            const container = document.getElementById('expensesListContainer');
+            container.innerHTML = '';
+            
+            let filtered = expenses.filter(ex => ex.expMonthId === currentExpMonthId);
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-xs text-center p-3">هیچ خەرجییەک لەم مانگەدا نییە</p>';
+                document.getElementById('expensesTotal').textContent = '٠ دینار';
+                return;
+            }
+            let sum = 0;
+            filtered.forEach(ex => {
+                sum += ex.amount;
+                container.innerHTML += `
+                    <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl flex justify-between items-center text-xs">
+                        <div>
+                            <p class="font-bold text-slate-800">${ex.title}</p>
+                            <p class="text-[10px] text-slate-500">${ex.date}</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-red-600">${ex.amount.toLocaleString()} د</span>
+                            <button onclick="deleteExpense(${ex.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('expensesTotal').textContent = sum.toLocaleString() + ' دینار';
+        }
+
+        // --- بەشی ٤: تێبینییەکان ---
+        document.getElementById('noteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            notes.push({
+                id: Date.now(),
+                title: document.getElementById('noteTitle').value,
+                content: document.getElementById('noteContent').value,
+                date: new Date().toLocaleDateString('ku-IQ')
+            });
+            renderNotes();
+            this.reset();
+        });
+
+        function deleteNote(id) {
+            notes = notes.filter(n => n.id !== id);
+            renderNotes();
+        }
+
+        function renderNotes() {
+            localStorage.setItem('gen_notes_db', JSON.stringify(notes));
+            const container = document.getElementById('notesContainer');
+            container.innerHTML = '';
+            if (notes.length === 0) {
+                container.innerHTML = '<p class="text-slate-400 text-xs text-center p-3">هیچ تێبینییەک نییە</p>';
+                return;
+            }
+            notes.forEach(n => {
+                container.innerHTML += `
+                    <div class="bg-slate-50 border border-slate-200 p-2.5 rounded-xl text-xs space-y-1">
+                        <div class="flex justify-between font-bold text-amber-700">
+                            <span>${n.title}</span>
+                            <button onclick="deleteNote(${n.id})" class="text-red-500"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <p class="text-slate-600">${n.content}</p>
+                    </div>`;
+            });
+        }
+    </script>
+</body>
+</html>
